@@ -1,6 +1,6 @@
 {
   "name": "@elium/mighty-xhr-adapter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/Elium/mighty-xhr-adapter#readme",
   "author": "Arnaud Bosc <bosc.arno@gmail.com>",
   "description": "Browser XHR adapter for mighty-js",
