@@ -1,0 +1,39 @@
+{
+  "name": "@elium/mighty-xhr-adapter",
+  "version": "0.0.0",
+  "homepage": "https://github.com/Elium/mighty-xhr-adapter#readme",
+  "author": "Arnaud Bosc <bosc.arno@gmail.com>",
+  "description": "Browser XHR adapter for mighty-js",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf -Rf lib",
+    "typings": "typings install",
+    "build": "npm run clean && tsc -p .",
+    "dev": "npm run clean && tsc -p . --watch",
+    "mocha": "mocha lib/tests --recursive",
+    "mocha:watch": "mocha lib/tests --recursive -w",
+    "pretest": "npm run build",
+    "test": "npm run mocha",
+    "test:watch": "npm run build && npm run mocha:watch",
+    "start": "npm run dev",
+    "preversion": "npm test",
+    "postversion": "git push --follow-tags"
+  },
+  "repository": {
+    "url": "git+https://github.com/Elium/mighty-xhr-adapter.git"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "lodash": "^4.12.0",
+    "mocha": "^2.5.3",
+    "typescript": "^1.8.2",
+    "typings": "^1.0.4"
+  },
+  "dependencies": {
+    "lodash": "^4.12.0",
+    "@elium/mighty-js": "^0.12"
+  },
+  "bugs": {
+    "url": "https://github.com/Elium/mighty-xhr-adapter/issues"
+  }
+}
