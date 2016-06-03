@@ -1,16 +1,16 @@
 import * as _ from "lodash";
 import * as chai from "chai";
-import {MOCKS, IServerExpectation, ServerMock, XhrMock} from "./mock";
-import {IXhrRequest, XhrRequest} from "../src/xhr.request";
+import {MOCKS, IServerExpectation, ServerMock, HttpMock} from "./mock";
+import {IHttpRequest, HttpRequest} from "../src/http.request";
 import {IResponse} from "@elium/mighty-js";
 
 const expect = chai.expect;
 let server: ServerMock;
-let xhr: XhrMock;
+let xhr: HttpMock;
 
 beforeEach(() => {
   server = new ServerMock();
-  xhr = new XhrMock(server);
+  xhr = new HttpMock(server);
 
   _.forEach(MOCKS, (mock: IServerExpectation) => {
     server.expect(_.clone(mock));
@@ -19,10 +19,10 @@ beforeEach(() => {
 
 const methods = ["get", "post", "patch", "delete", "put"];
 
-describe("Xhr", () => {
+describe("HttpLayer", () => {
   _.forEach(methods, (method) => {
     it(`should ${method} a resource`, (done) => {
-      const request: IXhrRequest = new XhrRequest(_.assign({}, {
+      const request: IHttpRequest = new HttpRequest(_.assign({}, {
         url: MOCKS[method].url,
         method: MOCKS[method].method
       }));

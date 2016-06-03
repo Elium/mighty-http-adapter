@@ -1,17 +1,12 @@
 import * as _ from "lodash";
-import {IXhrRequest, XhrRequest} from "./xhr.request";
 import {IResponse, Response, IMap} from "@elium/mighty-js";
+import {IDataLayer} from "./layer";
+import {IHttpRequest, HttpRequest} from "../http.request";
+import {IHttpResponse} from "../http.response";
 
-export interface IXhr {
-  get(request: IXhrRequest): Promise<IResponse>;
-  post(request: IXhrRequest): Promise<IResponse>;
-  put(request: IXhrRequest): Promise<IResponse>;
-  patch(request: IXhrRequest): Promise<IResponse>;
-  delete(request: IXhrRequest): Promise<IResponse>;
-  query(request: IXhrRequest): Promise<IResponse>;
-}
+export interface IXhrLayer extends IDataLayer {}
 
-export class Xhr implements IXhr {
+export class XhrLayer implements IXhrLayer {
 
   constructor() {}
 
@@ -20,8 +15,8 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public get(request: IXhrRequest): Promise<IResponse> {
-    const localRequest: IXhrRequest = request.merge(<IXhrRequest> {method: "GET"});
+  public get(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET"});
     return this.query(localRequest);
   }
 
@@ -31,8 +26,8 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public post(request: IXhrRequest): Promise<IResponse> {
-    const localRequest: IXhrRequest = request.merge(<IXhrRequest> {method: "POST"});
+  public post(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "POST"});
     return this.query(localRequest);
   }
 
@@ -42,8 +37,8 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public put(request: IXhrRequest): Promise<IResponse> {
-    const localRequest: IXhrRequest = request.merge(<IXhrRequest> {method: "PUT"});
+  public put(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PUT"});
     return this.query(localRequest);
   }
 
@@ -53,8 +48,8 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public patch(request: IXhrRequest): Promise<IResponse> {
-    const localRequest: IXhrRequest = request.merge(<IXhrRequest> {method: "PATCH"});
+  public patch(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PATCH"});
     return this.query(localRequest);
   }
 
@@ -64,8 +59,8 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public delete(request: IXhrRequest): Promise<IResponse> {
-    const localRequest: IXhrRequest = request.merge(<IXhrRequest> {method: "DELETE"});
+  public delete(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "DELETE"});
     return this.query(localRequest);
   }
 
@@ -75,10 +70,10 @@ export class Xhr implements IXhr {
    * @param request
    * @return {Promise}
    */
-  public query(request: IXhrRequest): Promise<IResponse> {
-    const localRequest = new XhrRequest(request);
+  public query(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest = new HttpRequest(request);
     return new Promise((resolve) => {
-      const xhr = this._getXhr();
+      const xhr = new XMLHttpRequest();
       xhr.onreadystatechange = () => this._checkResponse(xhr, resolve);
 
       if (!_.isEmpty(localRequest.params)) {
@@ -101,14 +96,6 @@ export class Xhr implements IXhr {
 
       xhr.send(data || null);
     });
-  }
-
-
-  /**
-   * @return {XMLHttpRequest=} A XHR object.
-   */
-  private _getXhr(): XMLHttpRequest {
-    return new XMLHttpRequest();
   }
 
 

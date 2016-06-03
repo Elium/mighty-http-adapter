@@ -1,21 +1,21 @@
 import * as _ from "lodash";
 import * as chai from "chai";
-import {MOCKS, IServerExpectation, ServerMock, XhrMock, schema} from "./mock";
-import {IXhrRequest, XhrRequest} from "../src/xhr.request";
+import {MOCKS, IServerExpectation, ServerMock, HttpMock, schema} from "./mock";
 import {IResponse, IResource, Resource, IJsonSchema} from "@elium/mighty-js";
-import {IXhrAdapter, XhrAdapter} from "../src/xhr.adapter";
+import {IHttpAdapter, HttpAdapter} from "../src/http.adapter";
+import {IHttpRequest, HttpRequest} from "../src/http.request";
 
 const expect = chai.expect;
 const mockSchema: IJsonSchema = _.cloneDeep(schema);
 let resource: IResource;
 let server: ServerMock;
-let xhr: XhrMock;
-let adapter: IXhrAdapter;
+let xhr: HttpMock;
+let adapter: IHttpAdapter;
 
 beforeEach(() => {
   server = new ServerMock();
-  xhr = new XhrMock(server);
-  adapter = new XhrAdapter(xhr);
+  xhr = new HttpMock(server);
+  adapter = new HttpAdapter(xhr);
   resource = new Resource(mockSchema, adapter);
 
   _.forEach(MOCKS, (mock: IServerExpectation) => {
@@ -30,10 +30,10 @@ const methods = {
   "destroy": "delete"
 };
 
-describe("Xhr Adapter", () => {
+describe("Http Adapter", () => {
   _.forEach(methods, (xhrMethod, adapterMethod) => {
     it(`should ${adapterMethod} a resource`, (done) => {
-      const request: IXhrRequest = new XhrRequest(_.assign({}, {
+      const request: IHttpRequest = new HttpRequest(_.assign({}, {
         url: MOCKS[xhrMethod].url,
         method: MOCKS[xhrMethod].method
       }));

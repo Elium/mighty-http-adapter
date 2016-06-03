@@ -1,10 +1,10 @@
-import {Xhr} from "../../src/xhr";
-import {IXhrRequest, XhrRequest} from "../../src/xhr.request";
 import {IResponse, Response} from "@elium/mighty-js";
 import {IServerMock, IServerExpectation} from "./server.mock";
+import {XhrLayer} from "../../src/layers/xhr.layer";
+import {IHttpRequest, HttpRequest} from "../../src/http.request";
 
 
-export class XhrMock extends Xhr {
+export class HttpMock extends XhrLayer{
 
   public server: IServerMock;
 
@@ -13,8 +13,8 @@ export class XhrMock extends Xhr {
     this.server = server;
   }
 
-  public query(request: IXhrRequest): Promise<IResponse> {
-    const localRequest = new XhrRequest(request);
+  public query(request: IHttpRequest): Promise<IResponse> {
+    const localRequest = new HttpRequest(request);
     return this.server
       .register(localRequest)
       .then((expectation: IServerExpectation) => {

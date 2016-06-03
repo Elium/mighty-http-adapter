@@ -1,6 +1,6 @@
 import * as _ from "lodash";
-import {IXhrRequest} from "../../src/xhr.request";
 import {IMap} from "@elium/mighty-js";
+import {IHttpRequest} from "../../src/http.request";
 
 export interface IServerExpectation {
   method: string
@@ -15,7 +15,7 @@ export interface IServerExpectation {
 
 export interface IServerMock {
   expect(expectation: IServerExpectation)
-  register(request: IXhrRequest): Promise<IServerExpectation>
+  register(request: IHttpRequest): Promise<IServerExpectation>
   respond(expectation: IServerExpectation)
 }
 
@@ -30,7 +30,7 @@ export class ServerMock {
     this.expectations.push(expectation);
   }
 
-  public register(request: IXhrRequest): Promise<IServerExpectation> {
+  public register(request: IHttpRequest): Promise<IServerExpectation> {
     const expectation: IServerExpectation = this._findExpectation(request);
     if (expectation) {
       expectation.promise = new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ export class ServerMock {
     }
   }
 
-  public respond(request: IXhrRequest) {
+  public respond(request: IHttpRequest) {
     const expectation: IServerExpectation = this._findExpectation(request);
     if (expectation) {
       expectation.resolve(expectation);
@@ -52,7 +52,7 @@ export class ServerMock {
     }
   }
 
-  private _findExpectation(request: IXhrRequest): IServerExpectation {
+  private _findExpectation(request: IHttpRequest): IServerExpectation {
     return _.find(this.expectations, {
       method: request.method,
       url: request.url,
