@@ -1,6 +1,6 @@
-# Welcome to the Mighty JS (MJS) XHR Adapter
+# Welcome to the Mighty JS (MJS) Http Adapter
 
-[![Build Status](https://travis-ci.org/Elium/mighty-xhr-adapter.svg?branch=master)](https://travis-ci.org/Elium/mighty-xhr-adapter)
+[![Build Status](https://travis-ci.org/Elium/mighty-http-adapter.svg?branch=master)](https://travis-ci.org/Elium/mighty-http-adapter)
 
 ## Installation
 

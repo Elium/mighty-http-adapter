@@ -1,16 +1,16 @@
 import * as _ from "lodash";
 import * as chai from "chai";
-import {MOCKS, IServerExpectation, ServerMock, HttpMock} from "./mock";
+import {MOCKS, IServerExpectation, ServerMock, LayerMock} from "./mock";
 import {IHttpRequest, HttpRequest} from "../src/http.request";
 import {IResponse} from "@elium/mighty-js";
 
 const expect = chai.expect;
 let server: ServerMock;
-let xhr: HttpMock;
+let layerMock: LayerMock;
 
 beforeEach(() => {
   server = new ServerMock();
-  xhr = new HttpMock(server);
+  layerMock = new LayerMock(server);
 
   _.forEach(MOCKS, (mock: IServerExpectation) => {
     server.expect(_.clone(mock));
@@ -19,7 +19,7 @@ beforeEach(() => {
 
 const methods = ["get", "post", "patch", "delete", "put"];
 
-describe("HttpLayer", () => {
+describe("Layer", () => {
   _.forEach(methods, (method) => {
     it(`should ${method} a resource`, (done) => {
       const request: IHttpRequest = new HttpRequest(_.assign({}, {
@@ -27,7 +27,7 @@ describe("HttpLayer", () => {
         method: MOCKS[method].method
       }));
 
-      xhr.get(request)
+      layerMock.get(request)
         .then((response: IResponse) => {
           expect(response).to.not.be.undefined;
           expect(response.data).to.deep.equal(MOCKS[method].data);

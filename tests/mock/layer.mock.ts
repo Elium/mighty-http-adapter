@@ -4,7 +4,7 @@ import {XhrLayer} from "../../src/layers/xhr.layer";
 import {IHttpRequest, HttpRequest} from "../../src/http.request";
 
 
-export class HttpMock extends XhrLayer{
+export class LayerMock extends XhrLayer{
 
   public server: IServerMock;
 

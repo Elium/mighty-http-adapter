@@ -1,3 +1,3 @@
 export * from "./mocks";
-export * from "./xhr.mock";
+export * from "./layer.mock";
 export * from "./server.mock";

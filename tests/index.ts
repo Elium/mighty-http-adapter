@@ -1,3 +1,3 @@
 export * from "./mock"
-export * from "./xhr.spec"
+export * from "./layer.spec"
 export * from "./adapter.spec"
