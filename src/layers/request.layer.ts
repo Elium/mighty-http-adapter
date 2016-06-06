@@ -2,7 +2,7 @@ import * as Request from "request";
 import {Options} from "request";
 import {IDataLayer} from "./layer";
 import {IHttpRequest} from "../http.request";
-import {IHttpResponse, HttpResponse} from "../http.response";
+import {IHttpResponse} from "../http.response";
 import {IncomingMessage} from "http";
 
 export interface IRequestLayer extends IDataLayer {}
@@ -10,58 +10,60 @@ export interface IRequestLayer extends IDataLayer {}
 export class RequestLayer implements IRequestLayer {
 
   constructor() {}
-  
-  public get(request: IHttpRequest): Promise<IHttpResponse> {
+
+  public find(request: IHttpRequest): Promise<IHttpResponse> {
+    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET", isArray: true});
+    return this._query(localRequest);
+  }
+
+
+  public findOne(request: IHttpRequest): Promise<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET"});
-    return this.query(localRequest);
+    return this._query(localRequest);
   }
 
 
-  public post(request: IHttpRequest): Promise<IHttpResponse> {
+  public create(request: IHttpRequest): Promise<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "POST"});
-    return this.query(localRequest);
+    return this._query(localRequest);
   }
 
 
-  public put(request: IHttpRequest): Promise<IHttpResponse> {
+  public save(request: IHttpRequest): Promise<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PUT"});
-    return this.query(localRequest);
+    return this._query(localRequest);
   }
 
 
-  public patch(request: IHttpRequest): Promise<IHttpResponse> {
-    const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PATCH"});
-    return this.query(localRequest);
-  }
-
-
-  public delete(request: IHttpRequest): Promise<IHttpResponse> {
+  public destroy(request: IHttpRequest): Promise<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "DELETE"});
-    return this.query(localRequest);
+    return this._query(localRequest);
   }
 
-
-  public query(request: IHttpRequest): Promise<IHttpResponse> {
+  protected _query(request: IHttpRequest): Promise<IHttpResponse> {
     const options = this._getOptions(request);
-    return this._request(options)
-      .then(
-        (response: IncomingMessage) => new HttpResponse({data: this._getData(request, response)}),
-        (response: IncomingMessage) => new HttpResponse({error: new Error(response.statusMessage)})
-      );
+    return this._request(request, options);
   }
 
-  private _request(options: Options): Promise<IncomingMessage> {
-    return new Promise((resolve, reject) => {
+  private _request(request: IHttpRequest, options: Options): Promise<IHttpResponse> {
+    let result = {data: {}, error: null};
+    return new Promise((resolve) => {
       Request(options, (error: any, response: IncomingMessage) => {
         if (!error) {
           if (response.statusCode == 200) {
-            resolve(response);
+            const data = JSON.parse(response.statusMessage);
+            if (request.isArray && !_.isArray(data)) {
+              result.error = new Error("result is not an array, got :" + response.statusMessage);
+            } else {
+              result.data = data;
+            }
           } else {
-            reject(response)
+            result.error = new Error(response.statusMessage);
           }
         } else {
-          reject(response);
+          result.error = new Error(response.statusMessage);
         }
+        resolve(result);
       });
     });
   }
@@ -75,9 +77,5 @@ export class RequestLayer implements IRequestLayer {
       body: request.data,
       qs: request.params
     }
-  }
-
-  private _getData(request: IHttpRequest, response: IncomingMessage): any {
-    return request.json ? JSON.parse(response.statusMessage) : response.statusMessage;
   }
 }

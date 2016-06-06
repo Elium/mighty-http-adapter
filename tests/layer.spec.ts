@@ -17,7 +17,7 @@ beforeEach(() => {
   });
 });
 
-const methods = ["get", "post", "patch", "delete", "put"];
+const methods = ["find", "findOne", "create", "destroy", "save"];
 
 describe("Layer", () => {
   _.forEach(methods, (method) => {
@@ -27,7 +27,7 @@ describe("Layer", () => {
         method: MOCKS[method].method
       }));
 
-      layerMock.get(request)
+      layerMock[method](request)
         .then((response: IResponse) => {
           expect(response).to.not.be.undefined;
           expect(response.data).to.deep.equal(MOCKS[method].data);

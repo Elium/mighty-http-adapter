@@ -56,9 +56,27 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
     const formattedRequest = this._formatter.create(resource, localRequest);
 
     return this._dataLayer
-      .post(<IHttpRequest> formattedRequest)
+      .create(<IHttpRequest> formattedRequest)
       .then((response: IResponse) => {
         return this._parser.create(resource, response);
+      });
+  }
+
+
+  /**
+   * Get all entries matching the specific .
+   * @param resource
+   * @param request
+   * @return {Promise<Array<IResource>>}
+   */
+  public findOne(resource: IResource, request: IHttpRequest): Promise<IResponse> {
+    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
+    const formattedRequest = this._formatter.findOne(resource, localRequest);
+
+    return this._dataLayer
+      .findOne(<IHttpRequest> formattedRequest)
+      .then((response: IResponse) => {
+        return this._parser.find(resource, response);
       });
   }
 
@@ -74,7 +92,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
     const formattedRequest = this._formatter.find(resource, localRequest);
 
     return this._dataLayer
-      .get(<IHttpRequest> formattedRequest)
+      .find(<IHttpRequest> formattedRequest)
       .then((response: IResponse) => {
         return this._parser.find(resource, response);
       });
@@ -92,7 +110,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
     const formattedRequest = this._formatter.save(resource, localRequest);
 
     return this._dataLayer
-      .put(<IHttpRequest> formattedRequest)
+      .save(<IHttpRequest> formattedRequest)
       .then((response: IResponse) => {
         return this._parser.save(resource, response);
       });
@@ -110,7 +128,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
     const formattedRequest = this._formatter.destroy(resource, localRequest);
 
     return this._dataLayer
-      .delete(<IHttpRequest> formattedRequest)
+      .destroy(<IHttpRequest> formattedRequest)
       .then((response: IResponse) => {
         return this._parser.destroy(resource, response);
       });

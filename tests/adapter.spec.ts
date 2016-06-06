@@ -24,25 +24,20 @@ beforeEach(() => {
   });
 });
 
-const methods = {
-  "create": "post",
-  "find": "get",
-  "save": "put",
-  "destroy": "delete"
-};
+const methods = ["find", "findOne", "create", "destroy", "save"];
 
 describe("Http Adapter", () => {
-  _.forEach(methods, (xhrMethod, adapterMethod) => {
-    it(`should ${adapterMethod} a resource`, (done) => {
+  _.forEach(methods, (method) => {
+    it(`should ${method} a resource`, (done) => {
       const request: IHttpRequest = new HttpRequest(_.assign({}, {
-        url: MOCKS[xhrMethod].url,
-        method: MOCKS[xhrMethod].method
+        url: MOCKS[method].url,
+        method: MOCKS[method].method
       }));
 
-      adapter[adapterMethod](resource, request)
+      adapter[method](resource, request)
         .then((response: IResponse) => {
           expect(response).to.not.be.undefined;
-          expect(response.data).to.deep.equal(MOCKS[xhrMethod].data);
+          expect(response.data).to.deep.equal(MOCKS[method].data);
           done();
         });
       server.respond(request);

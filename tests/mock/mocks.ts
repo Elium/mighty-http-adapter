@@ -41,43 +41,43 @@ export const schema: IJsonSchema = {
 };
 
 export interface IMocks {
-  get: IServerExpectation
-  post: IServerExpectation
-  delete: IServerExpectation
-  patch: IServerExpectation
-  put: IServerExpectation
+  find: IServerExpectation
+  findOne: IServerExpectation
+  create: IServerExpectation
+  save: IServerExpectation
+  destroy: IServerExpectation
 }
 
 export const MOCKS: IMocks = {
-  get: {
+  findOne: {
     method: "GET",
-    url: "/heroes",
+    url: "/heroes/1",
     status: 200,
     params: {},
     data: JSON.stringify(HEROES[0])
   },
-  post: {
+  find: {
+    method: "GET",
+    url: "/heroes",
+    status: 200,
+    params: {},
+    data: JSON.stringify([HEROES[0], HEROES[2]])
+  },
+  create: {
     method: "POST",
     url: "/heroes",
     status: 200,
     params: {},
     data: JSON.stringify(HEROES[0])
   },
-  delete: {
+  destroy: {
     method: "DELETE",
     url: "/heroes",
     status: 200,
     params: {},
     data: JSON.stringify(HEROES[0])
   },
-  patch: {
-    method: "PATH",
-    url: "/heroes",
-    status: 200,
-    params: {},
-    data: JSON.stringify(HEROES[0])
-  },
-  put: {
+  save: {
     method: "PUT",
     url: "/heroes",
     status: 200,

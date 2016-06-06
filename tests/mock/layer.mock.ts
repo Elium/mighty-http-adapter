@@ -13,7 +13,7 @@ export class LayerMock extends XhrLayer{
     this.server = server;
   }
 
-  public query(request: IHttpRequest): Promise<IResponse> {
+  protected _query(request: IHttpRequest): Promise<IResponse> {
     const localRequest = new HttpRequest(request);
     return this.server
       .register(localRequest)

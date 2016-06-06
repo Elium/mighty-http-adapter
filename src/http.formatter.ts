@@ -4,6 +4,7 @@ import {IHttpRequest} from "./http.request";
 export interface IHttpFormatter extends IFormatter {
   create(resource: IResource, request: IHttpRequest): IHttpRequest;
   find(resource: IResource, request: IHttpRequest): IHttpRequest;
+  findOne(resource: IResource, request: IHttpRequest): IHttpRequest;
   save(resource: IResource, request: IHttpRequest): IHttpRequest;
   destroy(resource: IResource, request: IHttpRequest): IHttpRequest;
 }
@@ -15,6 +16,10 @@ export class HttpFormatter implements IHttpFormatter {
   }
 
   public find(resource: IResource, request: IHttpRequest): IHttpRequest {
+    return request;
+  }
+
+  public findOne(resource: IResource, request: IHttpRequest): IHttpRequest {
     return request;
   }
 
