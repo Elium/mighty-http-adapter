@@ -52,7 +52,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * @return {Promise<IResource>}
    */
   public create(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest(request);
+    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
     const formattedRequest = this._formatter.create(resource, localRequest);
 
     return this._dataLayer
@@ -70,7 +70,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * @return {Promise<Array<IResource>>}
    */
   public find(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest(request);
+    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
     const formattedRequest = this._formatter.find(resource, localRequest);
 
     return this._dataLayer
@@ -88,7 +88,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * @return {Promise<IResource>}
    */
   public save(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest(request);
+    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
     const formattedRequest = this._formatter.save(resource, localRequest);
 
     return this._dataLayer
@@ -106,7 +106,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * @return {Promise<IResource>}
    */
   public destroy(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest(request);
+    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
     const formattedRequest = this._formatter.destroy(resource, localRequest);
 
     return this._dataLayer
