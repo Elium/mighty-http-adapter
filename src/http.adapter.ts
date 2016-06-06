@@ -13,7 +13,7 @@ export interface IHttpAdapter extends IAdapter {
 }
 
 export class HttpAdapter extends Adapter implements IHttpAdapter {
-  private _dataLayer: IDataLayer;
+  protected _dataLayer: IDataLayer;
 
   public constructor(dataLayer?: IDataLayer, formatter?: IHttpFormatter, parser?: IHttpParser) {
     super(formatter, parser);
