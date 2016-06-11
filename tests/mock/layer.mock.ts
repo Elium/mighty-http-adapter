@@ -17,8 +17,6 @@ export class LayerMock extends XhrLayer{
     const localRequest = new HttpRequest(request);
     return this.server
       .register(localRequest)
-      .then((expectation: IServerExpectation) => {
-        return new Response({data: expectation.data});
-      });
+      .then((expectation: IServerExpectation) => new Response({data: expectation.data}));
   }
 }

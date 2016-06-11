@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import {IResponse, Response, IMap} from "@elium/mighty-js";
 import {IDataLayer} from "./layer";
 import {IHttpRequest, HttpRequest} from "../http.request";
-import {IHttpResponse} from "../http.response";
+import {IHttpResponse, HttpResponse} from "../http.response";
 
 export interface IXhrLayer extends IDataLayer {}
 
@@ -46,7 +46,7 @@ export class XhrLayer implements IXhrLayer {
    */
   protected _query(request: IHttpRequest): Promise<IHttpResponse> {
     const localRequest = new HttpRequest(request);
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
 
       if (!_.isEmpty(localRequest.params)) {
@@ -65,7 +65,7 @@ export class XhrLayer implements IXhrLayer {
 
       _.forEach(localRequest.headers, (value, key) => xhr.setRequestHeader(key, value));
 
-      xhr.onreadystatechange = () => this._checkResponse(localRequest, xhr, resolve);
+      xhr.onreadystatechange = () => this._checkResponse(localRequest, xhr, resolve, reject);
       xhr.open(localRequest.method, localRequest.url, true);
       xhr.send(data || null);
     });
@@ -77,21 +77,26 @@ export class XhrLayer implements IXhrLayer {
    * @param request
    * @param xhr
    * @param resolve
+   * @param reject
    * @private
    */
-  private _checkResponse(request: IHttpRequest, xhr: XMLHttpRequest, resolve: (value?: IResponse) => void) {
+  private _checkResponse(request: IHttpRequest, xhr: XMLHttpRequest, resolve: (value?: IResponse) => void, reject: (reason?: any) => void) {
     if (xhr.readyState === 4) {
-      let result = {data: {}, error: null};
+      const response = new HttpResponse();
       if (xhr.status === 0 || xhr.status >= 200 && xhr.status < 400) {
-        result.data = JSON.parse(xhr.responseText);
-        if(request.isArray && !_.isArray(result.data)) {
-          result.data = null;
-          result.error = new Error("result is not an array, got :" + xhr.responseText);
+        response.data = JSON.parse(xhr.responseText);
+        if(request.isArray && !_.isArray(response.data)) {
+          response.data = null;
+          response.error = new Error("result is not an array, got :" + xhr.responseText);
         }
       } else {
-        result.error = new Error(xhr.responseText);
+        response.error = new Error(xhr.responseText);
       }
-      resolve(new Response(result));
+      if(response.error) {
+        reject(response);
+      } else {
+        resolve(response);
+      }
     }
   }
 

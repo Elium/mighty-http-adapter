@@ -30,7 +30,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
       this._formatter = new HttpFormatter();
     }
 
-    if(!parser) {
+    if (!parser) {
       this._parser = new HttpParser();
     }
   }
@@ -57,9 +57,8 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
 
     return this._dataLayer
       .create(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => {
-        return this._parser.create(resource, response);
-      });
+      .then((response: IResponse) => this._parser.create(resource, response))
+      .catch((response: IResponse) => Promise.reject(response.error));
   }
 
 
@@ -75,9 +74,8 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
 
     return this._dataLayer
       .findOne(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => {
-        return this._parser.find(resource, response);
-      });
+      .then((response: IResponse) => this._parser.find(resource, response))
+      .catch((response: IResponse) => Promise.reject(response.error));
   }
 
 
@@ -93,9 +91,8 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
 
     return this._dataLayer
       .find(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => {
-        return this._parser.find(resource, response);
-      });
+      .then((response: IResponse) => this._parser.find(resource, response))
+      .catch((response: IResponse) => Promise.reject(response.error));
   }
 
 
@@ -111,9 +108,8 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
 
     return this._dataLayer
       .save(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => {
-        return this._parser.save(resource, response);
-      });
+      .then((response: IResponse) => this._parser.save(resource, response))
+      .catch((response: IResponse) => Promise.reject(response.error));
   }
 
 
@@ -129,8 +125,7 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
 
     return this._dataLayer
       .destroy(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => {
-        return this._parser.destroy(resource, response);
-      });
+      .then((response: IResponse) => this._parser.destroy(resource, response))
+      .catch((response: IResponse) => Promise.reject(response.error));
   }
 }

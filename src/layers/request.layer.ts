@@ -2,7 +2,7 @@ import * as Request from "request";
 import {Options} from "request";
 import {IDataLayer} from "./layer";
 import {IHttpRequest} from "../http.request";
-import {IHttpResponse} from "../http.response";
+import {IHttpResponse, HttpResponse} from "../http.response";
 import {IncomingMessage} from "http";
 
 export interface IRequestLayer extends IDataLayer {}
@@ -46,24 +46,29 @@ export class RequestLayer implements IRequestLayer {
   }
 
   private _request(request: IHttpRequest, options: Options): Promise<IHttpResponse> {
-    let result = {data: {}, error: null};
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       Request(options, (error: any, response: IncomingMessage) => {
+        const httpResponse = new HttpResponse();
         if (!error) {
           if (response.statusCode == 200) {
             const data = JSON.parse(response.statusMessage);
             if (request.isArray && !_.isArray(data)) {
-              result.error = new Error("result is not an array, got :" + response.statusMessage);
+              httpResponse.error = new Error("result is not an array, got :" + response.statusMessage);
             } else {
-              result.data = data;
+              httpResponse.data = data;
             }
           } else {
-            result.error = new Error(response.statusMessage);
+            httpResponse.error = new Error(response.statusMessage);
           }
         } else {
-          result.error = new Error(response.statusMessage);
+          httpResponse.error = new Error(response.statusMessage);
         }
-        resolve(result);
+
+        if(httpResponse.error) {
+          reject(httpResponse);
+        } else {
+          resolve(httpResponse);
+        }
       });
     });
   }
