@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {IResponse, Response, IMap} from "@elium/mighty-js";
+import {IResponse, IMap} from "@elium/mighty-js";
 import {IDataLayer} from "./layer";
 import {IHttpRequest, HttpRequest} from "../http.request";
 import {IHttpResponse, HttpResponse} from "../http.response";
@@ -85,14 +85,14 @@ export class XhrLayer implements IXhrLayer {
       const response = new HttpResponse();
       if (xhr.status === 0 || xhr.status >= 200 && xhr.status < 400) {
         response.data = JSON.parse(xhr.responseText);
-        if(request.isArray && !_.isArray(response.data)) {
+        if (request.isArray && !_.isArray(response.data)) {
           response.data = null;
           response.error = new Error("result is not an array, got :" + xhr.responseText);
         }
       } else {
         response.error = new Error(xhr.responseText);
       }
-      if(response.error) {
+      if (response.error) {
         reject(response);
       } else {
         resolve(response);

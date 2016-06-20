@@ -64,7 +64,7 @@ export class RequestLayer implements IRequestLayer {
           httpResponse.error = new Error(response.statusMessage);
         }
 
-        if(httpResponse.error) {
+        if (httpResponse.error) {
           reject(httpResponse);
         } else {
           resolve(httpResponse);

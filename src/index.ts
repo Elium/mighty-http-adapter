@@ -1,4 +1,4 @@
-export * from "./layers";
+export * from "./layers/index";
 export * from "./http.adapter";
 export * from "./http.formatter";
 export * from "./http.parser";
