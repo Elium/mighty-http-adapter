@@ -47,21 +47,21 @@ export class RequestLayer implements IRequestLayer {
   private _request(request: IHttpRequest, options: Options): Promise<IHttpResponse> {
     const Request = require("request");
     return new Promise((resolve, reject) => {
-      Request(options, (error: any, response: IncomingMessage) => {
+      Request(options, (error: any, response: IncomingMessage, body: any) => {
         const httpResponse = new HttpResponse();
         if (!error) {
           if (response.statusCode == 200) {
-            const data = JSON.parse(response.statusMessage);
+            const data = JSON.parse(body);
             if (request.isArray && !_.isArray(data)) {
-              httpResponse.error = new Error("result is not an array, got :" + response.statusMessage);
+              httpResponse.error = new Error("result is not an array, got :" + data);
             } else {
               httpResponse.data = data;
             }
           } else {
-            httpResponse.error = new Error(response.statusMessage);
+            httpResponse.error = new Error(error.message);
           }
         } else {
-          httpResponse.error = new Error(response.statusMessage);
+          httpResponse.error = new Error(error.message);
         }
 
         if (httpResponse.error) {
