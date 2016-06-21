@@ -51,11 +51,10 @@ export class RequestLayer implements IRequestLayer {
         const httpResponse = new HttpResponse();
         if (!error) {
           if (response.statusCode == 200) {
-            const data = JSON.parse(body);
-            if (request.isArray && !_.isArray(data)) {
-              httpResponse.error = new Error("result is not an array, got :" + data);
+            if (request.isArray && !_.isArray(body)) {
+              httpResponse.error = new Error("result is not an array, got :" + JSON.stringify(body));
             } else {
-              httpResponse.data = data;
+              httpResponse.data = body;
             }
           } else {
             httpResponse.error = new Error(error.message);
