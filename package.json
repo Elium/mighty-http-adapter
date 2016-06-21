@@ -1,6 +1,6 @@
 {
   "name": "@elium/mighty-http-adapter",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "homepage": "https://github.com/Elium/mighty-http-adapter#readme",
   "author": "Arnaud Bosc <bosc.arno@gmail.com>",
   "description": "Browser XHR adapter for mighty-js",
