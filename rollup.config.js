@@ -9,8 +9,8 @@ export default {
     buble()
   ],
   targets: [
-    {dest: 'lib/mighty-js.cjs.js', format: 'cjs', sourceMap: true},
-    {dest: 'lib/mighty-js.umd.js', format: 'umd', sourceMap: true, moduleName: "mighty-js"},
-    {dest: 'lib/mighty-js.es6.js', format: 'es', sourceMap: true}
+    {dest: 'lib/mighty-http-adapter.cjs.js', format: 'cjs', sourceMap: true},
+    {dest: 'lib/mighty-http-adapter.umd.js', format: 'umd', sourceMap: true, moduleName: "mighty-http-adapter"},
+    {dest: 'lib/mighty-http-adapter.es6.js', format: 'es', sourceMap: true}
   ]
 }
