@@ -1,4 +1,3 @@
-import * as Request from "request";
 import {Options} from "request";
 import {IDataLayer} from "./layer";
 import {IHttpRequest} from "../http.request";
@@ -46,6 +45,7 @@ export class RequestLayer implements IRequestLayer {
   }
 
   private _request(request: IHttpRequest, options: Options): Promise<IHttpResponse> {
+    const Request = require("request");
     return new Promise((resolve, reject) => {
       Request(options, (error: any, response: IncomingMessage) => {
         const httpResponse = new HttpResponse();
