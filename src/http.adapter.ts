@@ -1,22 +1,19 @@
 import * as _ from "lodash";
-import {IAdapter, Adapter, IResource, IResponse} from "@elium/mighty-js";
-import {IHttpParser, HttpParser} from "./http.parser";
-import {IHttpFormatter, HttpFormatter} from "./http.formatter";
+import {Adapter, IResource, IResponse} from "@elium/mighty-js";
 import {IHttpRequest, HttpRequest} from "./http.request";
 import {IDataLayer} from "./layers/layer";
 import {XhrLayer} from "./layers/xhr.layer";
 import {RequestLayer} from "./layers/request.layer";
+import {Observable} from "rxjs/Rx";
 
-export interface IHttpAdapter extends IAdapter {
-  formatter: IHttpFormatter;
-  parser: IHttpParser;
-}
-
-export class HttpAdapter extends Adapter implements IHttpAdapter {
+export class HttpAdapter extends Adapter {
   protected _dataLayer: IDataLayer;
+  protected _baseUrl: string;
 
-  public constructor(dataLayer?: IDataLayer, formatter?: IHttpFormatter, parser?: IHttpParser) {
-    super(formatter, parser);
+  public constructor(baseURl?: string, dataLayer?: IDataLayer) {
+    super();
+
+    this._baseUrl = baseURl || "";
 
     if (_.isObject(dataLayer)) {
       this._dataLayer = dataLayer;
@@ -25,40 +22,16 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
     } else if (!_.isUndefined(process)) {
       this._dataLayer = new RequestLayer();
     }
-
-    if (!formatter) {
-      this._formatter = new HttpFormatter();
-    }
-
-    if (!parser) {
-      this._parser = new HttpParser();
-    }
   }
-
-
-  public get formatter(): IHttpFormatter {
-    return <IHttpFormatter> this._formatter;
-  }
-
-  public get parser(): IHttpParser {
-    return <IHttpParser> this._parser;
-  }
-
 
   /**
    * Create a new object.
    * @param resource
    * @param request
-   * @return {Promise<IResource>}
+   * @return {Observable<IResource>}
    */
-  public create(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
-    const formattedRequest = this._formatter.create(resource, localRequest);
-
-    return this._dataLayer
-      .create(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => this._parser.create(resource, response))
-      .catch((response: IResponse) => Promise.reject(response.error));
+  public create(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+    return this._dataLayer.create(this._getRequest(resource, request));
   }
 
 
@@ -66,16 +39,10 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * Get all entries matching the specific .
    * @param resource
    * @param request
-   * @return {Promise<Array<IResource>>}
+   * @return {Observable<Array<IResource>>}
    */
-  public findOne(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
-    const formattedRequest = this._formatter.findOne(resource, localRequest);
-
-    return this._dataLayer
-      .findOne(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => this._parser.find(resource, response))
-      .catch((response: IResponse) => Promise.reject(response.error));
+  public findOne(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+    return this._dataLayer.findOne(this._getRequest(resource, request));
   }
 
 
@@ -83,16 +50,10 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * Get all entries matching the specific .
    * @param resource
    * @param request
-   * @return {Promise<Array<IResource>>}
+   * @return {Observable<Array<IResource>>}
    */
-  public find(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
-    const formattedRequest = this._formatter.find(resource, localRequest);
-
-    return this._dataLayer
-      .find(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => this._parser.find(resource, response))
-      .catch((response: IResponse) => Promise.reject(response.error));
+  public find(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+    return this._dataLayer.find(this._getRequest(resource, request).merge(<IHttpRequest> {isArray: true}));
   }
 
 
@@ -100,16 +61,10 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * Update the specified
    * @param resource
    * @param request
-   * @return {Promise<IResource>}
+   * @return {Observable<IResource>}
    */
-  public save(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
-    const formattedRequest = this._formatter.save(resource, localRequest);
-
-    return this._dataLayer
-      .save(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => this._parser.save(resource, response))
-      .catch((response: IResponse) => Promise.reject(response.error));
+  public save(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+    return this._dataLayer.save(this._getRequest(resource, request));
   }
 
 
@@ -117,15 +72,14 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
    * Remove the specified entry
    * @param resource
    * @param request
-   * @return {Promise<IResource>}
+   * @return {Observable<IResource>}
    */
-  public destroy(resource: IResource, request: IHttpRequest): Promise<IResponse> {
-    const localRequest = new HttpRequest({}).merge({url: resource.schema.id}).merge(request);
-    const formattedRequest = this._formatter.destroy(resource, localRequest);
+  public destroy(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+    return this._dataLayer.destroy(this._getRequest(resource, request));
+  }
 
-    return this._dataLayer
-      .destroy(<IHttpRequest> formattedRequest)
-      .then((response: IResponse) => this._parser.destroy(resource, response))
-      .catch((response: IResponse) => Promise.reject(response.error));
+
+  private _getRequest(resource: IResource, request: IHttpRequest) {
+    return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}`}).merge(request);
   }
 }

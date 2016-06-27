@@ -1,46 +1,88 @@
 import * as _ from "lodash";
 import * as chai from "chai";
-import {MOCKS, IServerExpectation, ServerMock, schema} from "./mock";
-import {IResponse, IResource, Resource, IJsonSchema} from "@elium/mighty-js";
-import {IHttpAdapter, HttpAdapter} from "../src/http.adapter";
+import {server} from "./mock/server";
 import {IHttpRequest, HttpRequest} from "../src/http.request";
-import {LayerMock} from "./mock/layer.mock";
+import {adapter, resource} from "./mock/resource";
+import {deadpool} from "./mock/data";
+import {IHttpResponse} from "../src/http.response";
 
 const expect = chai.expect;
-const mockSchema: IJsonSchema = _.cloneDeep(schema);
-let resource: IResource;
-let server: ServerMock;
-let httpMock: LayerMock;
-let adapter: IHttpAdapter;
+const deadpoolCreateRequest: IHttpRequest = new HttpRequest({data: deadpool});
 
-beforeEach(() => {
-  server = new ServerMock();
-  httpMock = new LayerMock(server);
-  adapter = new HttpAdapter(httpMock);
-  resource = new Resource(mockSchema, adapter);
+describe("Adapter", () => {
 
-  _.forEach(MOCKS, (mock: IServerExpectation) => {
-    server.expect(_.clone(mock));
-  });
-});
-
-const methods = ["find", "findOne", "create", "destroy", "save"];
-
-describe("Http Adapter", () => {
-  _.forEach(methods, (method) => {
-    it(`should ${method} a resource`, (done) => {
-      const request: IHttpRequest = new HttpRequest(_.assign({}, {
-        url: MOCKS[method].url,
-        method: MOCKS[method].method
-      }));
-
-      adapter[method](resource, request)
-        .then((response: IResponse) => {
-          expect(response).to.not.be.undefined;
-          expect(response.data).to.deep.equal(MOCKS[method].data);
-          done();
-        });
-      server.respond(request);
+  before((done) => {
+    server.start((error) => {
+      if (error) {
+        throw error;
+      }
+      //console.log('Server started at: ' + server.info.uri);
+      done();
     });
   });
+
+  after((done) => {
+    server.stop({timeout: 0}, () => {
+      //console.log("Server stopped");
+      done();
+    });
+  });
+
+  it(`should create a record`, (done) => {
+    adapter.create(resource, deadpoolCreateRequest)
+      .subscribe((response: IHttpResponse) => {
+        checkDeadpool(response.data);
+        done()
+      });
+  });
+
+  it(`should find a record`, (done) => {
+    adapter.create(resource, deadpoolCreateRequest)
+      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({data: response.data})))
+      .subscribe((response: IHttpResponse) => {
+        checkDeadpool(response.data);
+        done();
+      });
+  });
+
+  it(`should get all records`, (done) => {
+    adapter.create(resource, deadpoolCreateRequest)
+      .concatMap((response: IHttpResponse) => adapter.find(resource, new HttpRequest({})))
+      .subscribe((response: IHttpResponse) => {
+        expect(_.isArray(response.data)).to.be.true;
+        done();
+      });
+  });
+
+  it(`should save a record`, (done) => {
+    adapter.create(resource, deadpoolCreateRequest)
+      .concatMap((response: IHttpResponse) => {
+        const hero = response.data;
+        return adapter.save(resource, new HttpRequest({data: _.extend(hero, {name: "lifepool"})}));
+      })
+      .subscribe((response: IHttpResponse) => {
+        const hero = response.data;
+        expect(hero).not.to.be.undefined;
+        expect(hero).to.have.property("name").that.equals("lifepool");
+        done();
+      });
+  });
+
+  it(`should delete a record`, (done) => {
+    adapter.create(resource, deadpoolCreateRequest)
+      .concatMap((response: IHttpResponse) => adapter.destroy(resource, new HttpRequest({data: response.data})))
+      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({data: response.data})))
+      .subscribe((response: IHttpResponse) => {
+        expect(response.data).to.be.undefined;
+        done();
+      });
+  });
 });
+
+function checkDeadpool(hero) {
+  expect(hero).not.to.be.undefined;
+  expect(hero).to.have.property("id").that.is.not.undefined;
+  expect(hero).to.have.property("name").that.deep.equal(deadpool.name);
+  expect(hero).to.have.property("colors").that.deep.equal(deadpool.colors);
+  expect(hero).to.have.property("powers").that.deep.equal(deadpool.powers);
+}

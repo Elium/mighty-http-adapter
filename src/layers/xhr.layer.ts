@@ -1,8 +1,9 @@
 import * as _ from "lodash";
-import {IResponse, IMap} from "@elium/mighty-js";
+import {IMap} from "@elium/mighty-js";
 import {IDataLayer} from "./layer";
 import {IHttpRequest, HttpRequest} from "../http.request";
 import {IHttpResponse, HttpResponse} from "../http.response";
+import {Observable, Observer} from "rxjs/Rx";
 
 export interface IXhrLayer extends IDataLayer {}
 
@@ -10,30 +11,30 @@ export class XhrLayer implements IXhrLayer {
 
   constructor() {}
 
-  public findOne(request: IHttpRequest): Promise<IHttpResponse> {
+  public findOne(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET"});
     return this._query(localRequest);
   }
 
-  public find(request: IHttpRequest): Promise<IHttpResponse> {
+  public find(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET", isArray: true});
     return this._query(localRequest);
   }
 
 
-  public create(request: IHttpRequest): Promise<IHttpResponse> {
+  public create(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "POST"});
     return this._query(localRequest);
   }
 
 
-  public save(request: IHttpRequest): Promise<IHttpResponse> {
+  public save(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PUT"});
     return this._query(localRequest);
   }
 
 
-  public destroy(request: IHttpRequest): Promise<IHttpResponse> {
+  public destroy(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "DELETE"});
     return this._query(localRequest);
   }
@@ -42,11 +43,11 @@ export class XhrLayer implements IXhrLayer {
   /**
    * Query a url with the specified request.
    * @param request
-   * @return {Promise}
+   * @return {Observable}
    */
-  protected _query(request: IHttpRequest): Promise<IHttpResponse> {
+  protected _query(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest = new HttpRequest(request);
-    return new Promise((resolve, reject) => {
+    return new Observable((observer: Observer<IHttpResponse>) => {
       const xhr = new XMLHttpRequest();
 
       if (!_.isEmpty(localRequest.params)) {
@@ -65,7 +66,7 @@ export class XhrLayer implements IXhrLayer {
 
       _.forEach(localRequest.headers, (value, key) => xhr.setRequestHeader(key, value));
 
-      xhr.onreadystatechange = () => this._checkResponse(localRequest, xhr, resolve, reject);
+      xhr.onreadystatechange = () => this._checkResponse(localRequest, xhr, observer);
       xhr.open(localRequest.method, localRequest.url, true);
       xhr.send(data || null);
     });
@@ -73,14 +74,13 @@ export class XhrLayer implements IXhrLayer {
 
 
   /**
-   * Check the response of the request and fullfill the Promise.
+   * Check the response of the request and fullfill the Observable.
    * @param request
    * @param xhr
-   * @param resolve
-   * @param reject
+   * @param observer
    * @private
    */
-  private _checkResponse(request: IHttpRequest, xhr: XMLHttpRequest, resolve: (value?: IResponse) => void, reject: (reason?: any) => void) {
+  private _checkResponse(request: IHttpRequest, xhr: XMLHttpRequest, observer: Observer<IHttpResponse>) {
     if (xhr.readyState === 4) {
       const response = new HttpResponse();
       if (xhr.status === 0 || xhr.status >= 200 && xhr.status < 400) {
@@ -93,9 +93,9 @@ export class XhrLayer implements IXhrLayer {
         response.error = new Error(xhr.responseText);
       }
       if (response.error) {
-        reject(response);
+        observer.error(response);
       } else {
-        resolve(response);
+        observer.next(response);
       }
     }
   }

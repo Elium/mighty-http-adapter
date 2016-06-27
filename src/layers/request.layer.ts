@@ -1,8 +1,10 @@
+import * as _ from "lodash";
 import {Options} from "request";
 import {IDataLayer} from "./layer";
 import {IHttpRequest} from "../http.request";
 import {IHttpResponse, HttpResponse} from "../http.response";
 import {IncomingMessage} from "http";
+import {Observer, Observable} from "rxjs/Rx";
 
 export interface IRequestLayer extends IDataLayer {}
 
@@ -10,43 +12,43 @@ export class RequestLayer implements IRequestLayer {
 
   constructor() {}
 
-  public find(request: IHttpRequest): Promise<IHttpResponse> {
+  public find(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET", isArray: true});
     return this._query(localRequest);
   }
 
 
-  public findOne(request: IHttpRequest): Promise<IHttpResponse> {
+  public findOne(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "GET"});
     return this._query(localRequest);
   }
 
 
-  public create(request: IHttpRequest): Promise<IHttpResponse> {
+  public create(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "POST"});
     return this._query(localRequest);
   }
 
 
-  public save(request: IHttpRequest): Promise<IHttpResponse> {
+  public save(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "PUT"});
     return this._query(localRequest);
   }
 
 
-  public destroy(request: IHttpRequest): Promise<IHttpResponse> {
+  public destroy(request: IHttpRequest): Observable<IHttpResponse> {
     const localRequest: IHttpRequest = request.merge(<IHttpRequest> {method: "DELETE"});
     return this._query(localRequest);
   }
 
-  protected _query(request: IHttpRequest): Promise<IHttpResponse> {
+  protected _query(request: IHttpRequest): Observable<IHttpResponse> {
     const options = this._getOptions(request);
     return this._request(request, options);
   }
 
-  private _request(request: IHttpRequest, options: Options): Promise<IHttpResponse> {
+  private _request(request: IHttpRequest, options: Options): Observable<IHttpResponse> {
     const Request = require("request");
-    return new Promise((resolve, reject) => {
+    return Observable.create((observer: Observer<IHttpResponse>) => {
       Request(options, (error: any, response: IncomingMessage, body: any) => {
         const httpResponse = new HttpResponse();
         if (!error) {
@@ -64,9 +66,9 @@ export class RequestLayer implements IRequestLayer {
         }
 
         if (httpResponse.error) {
-          reject(httpResponse);
+          observer.error(httpResponse);
         } else {
-          resolve(httpResponse);
+          observer.next(httpResponse);
         }
       });
     });
