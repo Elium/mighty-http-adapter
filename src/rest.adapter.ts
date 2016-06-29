@@ -11,7 +11,7 @@ export class RestAdapter extends HttpAdapter {
    * @param request
    * @return {Observable<Array<IResource>>}
    */
-  public findOne(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public findOne(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.findOne(this._getRequestWithId(resource, request));
   }
 
@@ -22,7 +22,7 @@ export class RestAdapter extends HttpAdapter {
    * @param request
    * @return {Observable<IResource>}
    */
-  public save(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public save(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.save(this._getRequestWithId(resource, request));
   }
 
@@ -33,11 +33,11 @@ export class RestAdapter extends HttpAdapter {
    * @param request
    * @return {Observable<IResource>}
    */
-  public destroy(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public destroy(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.destroy(this._getRequestWithId(resource, request));
   }
 
-  private _getRequestWithId(resource: IResource, request: IHttpRequest) {
+  private _getRequestWithId(resource: IResource<any>, request: IHttpRequest) {
     return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}/${request.data.id}`}).merge(request);
   }
 }

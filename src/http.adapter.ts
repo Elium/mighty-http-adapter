@@ -30,7 +30,7 @@ export class HttpAdapter extends Adapter {
    * @param request
    * @return {Observable<IResource>}
    */
-  public create(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public create(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.create(this._getRequest(resource, request));
   }
 
@@ -41,7 +41,7 @@ export class HttpAdapter extends Adapter {
    * @param request
    * @return {Observable<Array<IResource>>}
    */
-  public findOne(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public findOne(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.findOne(this._getRequest(resource, request));
   }
 
@@ -52,7 +52,7 @@ export class HttpAdapter extends Adapter {
    * @param request
    * @return {Observable<Array<IResource>>}
    */
-  public find(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public find(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.find(this._getRequest(resource, request).merge(<IHttpRequest> {isArray: true}));
   }
 
@@ -63,7 +63,7 @@ export class HttpAdapter extends Adapter {
    * @param request
    * @return {Observable<IResource>}
    */
-  public save(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public save(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.save(this._getRequest(resource, request));
   }
 
@@ -74,12 +74,12 @@ export class HttpAdapter extends Adapter {
    * @param request
    * @return {Observable<IResource>}
    */
-  public destroy(resource: IResource, request: IHttpRequest): Observable<IResponse> {
+  public destroy(resource: IResource<any>, request: IHttpRequest): Observable<IResponse> {
     return this._dataLayer.destroy(this._getRequest(resource, request));
   }
 
 
-  private _getRequest(resource: IResource, request: IHttpRequest) {
+  private _getRequest(resource: IResource<any>, request: IHttpRequest) {
     return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}`}).merge(request);
   }
 }
