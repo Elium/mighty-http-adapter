@@ -9,6 +9,8 @@ import {IHttpResponse} from "../src/http.response";
 const expect = chai.expect;
 const deadpoolCreateRequest: IHttpRequest = new HttpRequest({data: deadpool});
 
+let deadpoolResponse: IHttpResponse;
+
 describe("Adapter", () => {
 
   before((done) => {
@@ -28,17 +30,28 @@ describe("Adapter", () => {
     });
   });
 
-  it(`should create a record`, (done) => {
+  beforeEach((done) => {
     adapter.create(resource, deadpoolCreateRequest)
       .subscribe((response: IHttpResponse) => {
-        checkDeadpool(response.data);
-        done()
+        deadpoolResponse = response;
+        done();
       });
   });
 
-  it(`should find a record`, (done) => {
-    adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
+  it(`should create a record`, () => {
+    checkDeadpool(deadpoolResponse.data);
+  });
+
+  it(`should find a record when id is within the criteria`, (done) => {
+    adapter.findOne(resource, new HttpRequest({criteria: {id: deadpoolResponse.data["id"]}}))
+      .subscribe((response: IHttpResponse) => {
+        checkDeadpool(response.data);
+        done();
+      });
+  });
+
+  it(`should find a record when id is within the data`, (done) => {
+    adapter.findOne(resource, new HttpRequest({data: deadpoolResponse.data}))
       .subscribe((response: IHttpResponse) => {
         checkDeadpool(response.data);
         done();
@@ -46,20 +59,19 @@ describe("Adapter", () => {
   });
 
   it(`should get all records`, (done) => {
-    adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => adapter.find(resource, new HttpRequest({})))
+    adapter.find(resource, new HttpRequest({}))
       .subscribe((response: IHttpResponse) => {
         expect(_.isArray(response.data)).to.be.true;
         done();
       });
   });
 
-  it(`should save a record`, (done) => {
-    adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => {
-        const hero = response.data;
-        return adapter.save(resource, new HttpRequest({data: _.extend(hero, {name: "lifepool"})}));
-      })
+  it(`should save a record when id is within the criteria`, (done) => {
+    const request = new HttpRequest({
+      criteria: {id: deadpoolResponse.data["id"]},
+      data: _.omit(_.extend(deadpoolResponse.data, {name: "lifepool"}), ["id"])
+    });
+    adapter.save(resource, request)
       .subscribe((response: IHttpResponse) => {
         const hero = response.data;
         expect(hero).not.to.be.undefined;
@@ -68,10 +80,29 @@ describe("Adapter", () => {
       });
   });
 
-  it(`should delete a record`, (done) => {
-    adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => adapter.destroy(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
+  it(`should save a record when id is within the data`, (done) => {
+    const request = new HttpRequest({data: _.extend(deadpoolResponse.data, {name: "lifepool"})});
+    adapter.save(resource, request)
+      .subscribe((response: IHttpResponse) => {
+        const hero = response.data;
+        expect(hero).not.to.be.undefined;
+        expect(hero).to.have.property("name").that.equals("lifepool");
+        done();
+      });
+  });
+
+  it(`should delete a record when id is within the criteria`, (done) => {
+    adapter.destroy(resource, new HttpRequest({criteria: {id: deadpoolResponse.data["id"]}}))
       .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
+      .subscribe((response: IHttpResponse) => {
+        expect(response.data).to.be.undefined;
+        done();
+      });
+  });
+
+  it(`should delete a record when id is within the data`, (done) => {
+    adapter.destroy(resource, new HttpRequest({data: deadpoolResponse.data}))
+      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({data: response.data})))
       .subscribe((response: IHttpResponse) => {
         expect(response.data).to.be.undefined;
         done();
