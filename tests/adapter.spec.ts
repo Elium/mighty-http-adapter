@@ -39,13 +39,13 @@ describe("Adapter", () => {
   });
 
   it(`should create a record`, () => {
-    checkDeadpool(deadpoolResponse.data);
+    checkHero(deadpool, deadpoolResponse.data);
   });
 
   it(`should find a record when id is within the criteria`, (done) => {
     adapter.findOne(resource, new HttpRequest({criteria: {id: deadpoolResponse.data["id"]}}))
       .subscribe((response: IHttpResponse) => {
-        checkDeadpool(response.data);
+        checkHero(deadpool, response.data);
         done();
       });
   });
@@ -53,7 +53,7 @@ describe("Adapter", () => {
   it(`should find a record when id is within the data`, (done) => {
     adapter.findOne(resource, new HttpRequest({data: deadpoolResponse.data}))
       .subscribe((response: IHttpResponse) => {
-        checkDeadpool(response.data);
+        checkHero(deadpool, response.data);
         done();
       });
   });
@@ -110,10 +110,10 @@ describe("Adapter", () => {
   });
 });
 
-function checkDeadpool(hero) {
-  expect(hero).not.to.be.undefined;
-  expect(hero).to.have.property("id").that.is.not.undefined;
-  expect(hero).to.have.property("name").that.deep.equal(deadpool.name);
-  expect(hero).to.have.property("colors").that.deep.equal(deadpool.colors);
-  expect(hero).to.have.property("powers").that.deep.equal(deadpool.powers);
+function checkHero(originalHero, newHero) {
+  expect(newHero).not.to.be.undefined;
+  expect(newHero).to.have.property("id").that.is.not.undefined;
+  expect(newHero).to.have.property("name").that.deep.equal(originalHero.name);
+  expect(newHero).to.have.property("colors").that.deep.equal(originalHero.colors);
+  expect(newHero).to.have.property("powers").that.deep.equal(originalHero.powers);
 }
