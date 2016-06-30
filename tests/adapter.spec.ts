@@ -38,7 +38,7 @@ describe("Adapter", () => {
 
   it(`should find a record`, (done) => {
     adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({data: response.data})))
+      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
       .subscribe((response: IHttpResponse) => {
         checkDeadpool(response.data);
         done();
@@ -70,8 +70,8 @@ describe("Adapter", () => {
 
   it(`should delete a record`, (done) => {
     adapter.create(resource, deadpoolCreateRequest)
-      .concatMap((response: IHttpResponse) => adapter.destroy(resource, new HttpRequest({data: response.data})))
-      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({data: response.data})))
+      .concatMap((response: IHttpResponse) => adapter.destroy(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
+      .concatMap((response: IHttpResponse) => adapter.findOne(resource, new HttpRequest({criteria: {id: response.data["id"]}})))
       .subscribe((response: IHttpResponse) => {
         expect(response.data).to.be.undefined;
         done();

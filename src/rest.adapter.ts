@@ -38,6 +38,6 @@ export class RestAdapter extends HttpAdapter {
   }
 
   private _getRequestWithId(resource: IResource<any>, request: IHttpRequest) {
-    return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}/${request.data.id}`}).merge(request);
+    return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}/${request.criteria["id"] || request.data.id}`}).merge(request);
   }
 }
