@@ -1,8 +1,7 @@
-import {IJsonSchema, IResource, Resource, IAdapter, IRecord} from "@elium/mighty-js";
-import {RequestLayer} from "../../src/layers/request.layer";
-import {IDataLayer} from "../../src/layers/layer";
-import {url} from "./server";
-import {RestAdapter} from "../../src/rest.adapter";
+import {IJsonSchema, IResource, Resource, IAdapter, IRecord} from '@elium/mighty-js';
+import {RestAdapter} from '../../src/rest.adapter';
+import {IDataLayer} from '../../src/layer';
+import {MockLayer} from './layer';
 
 export const schema: IJsonSchema = {
   id: "heroes",
@@ -26,6 +25,6 @@ export interface IHeroRecord extends IRecord {
   powers: Array<string>
 }
 
-export const layer: IDataLayer = new RequestLayer();
-export const adapter: IAdapter = new RestAdapter(url, layer);
+export const layer: IDataLayer = new MockLayer();
+export const adapter: IAdapter = new RestAdapter("", layer);
 export const resource: IResource<IHeroRecord> = new Resource <IHeroRecord>(schema, adapter);
