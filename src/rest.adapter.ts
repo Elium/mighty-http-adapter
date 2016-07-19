@@ -1,7 +1,7 @@
-import {IResource, IResponse} from "@elium/mighty-js";
-import {Observable} from "rxjs/Rx";
-import {HttpAdapter} from "./http.adapter";
-import {IHttpRequest, HttpRequest} from "./http.request";
+import {IResource, IResponse} from '@elium/mighty-js';
+import {Observable} from 'rxjs/Rx';
+import {HttpAdapter} from './http.adapter';
+import {IHttpRequest, HttpRequest} from './http.request';
 
 export class RestAdapter extends HttpAdapter {
 

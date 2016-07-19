@@ -1,10 +1,7 @@
-import * as _ from "lodash";
-import {Adapter, IResource, IResponse} from "@elium/mighty-js";
-import {IHttpRequest, HttpRequest} from "./http.request";
-import {IDataLayer} from "./layers/layer";
-import {XhrLayer} from "./layers/xhr.layer";
-import {RequestLayer} from "./layers/request.layer";
-import {Observable} from "rxjs/Rx";
+import {Adapter, IResource, IResponse} from '@elium/mighty-js';
+import {IHttpRequest, HttpRequest} from './http.request';
+import {Observable} from 'rxjs/Rx';
+import {IDataLayer} from './layer';
 
 export class HttpAdapter extends Adapter {
   protected _dataLayer: IDataLayer;
@@ -12,16 +9,8 @@ export class HttpAdapter extends Adapter {
 
   public constructor(baseURl?: string, dataLayer?: IDataLayer) {
     super();
-
     this._baseUrl = baseURl || "";
-
-    if (_.isObject(dataLayer)) {
-      this._dataLayer = dataLayer;
-    } else if (!_.isUndefined(XMLHttpRequest)) {
-      this._dataLayer = new XhrLayer();
-    } else if (!_.isUndefined(process)) {
-      this._dataLayer = new RequestLayer();
-    }
+    this._dataLayer = dataLayer;
   }
 
   /**
