@@ -1,6 +1,8 @@
 {
   "name": "mighty-js",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "registry:npm/lodash#4.0.0+20160723033700"
+  },
   "globalDependencies": {
     "chai": "registry:dt/chai",
     "es6-shim": "registry:dt/es6-shim",

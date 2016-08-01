@@ -68,7 +68,7 @@ export class HttpAdapter extends Adapter {
   }
 
 
-  private _getRequest(resource: IResource<any>, request: IHttpRequest) {
+  private _getRequest(resource: IResource<any>, request: IHttpRequest): HttpRequest {
     return new HttpRequest({url: `${this._baseUrl}/${resource.schema.id}`}).merge(request);
   }
 }

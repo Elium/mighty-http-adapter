@@ -1,4 +1,5 @@
 import {IRequest, IMap, Request} from '@elium/mighty-js';
+import * as _ from "lodash";
 
 export interface IHttpRequest extends IRequest {
   data?: any;
@@ -7,8 +8,6 @@ export interface IHttpRequest extends IRequest {
   isArray?: boolean;
   params?: IMap<string>;
   headers?: IMap<string>;
-
-  merge?(request: IHttpRequest): IHttpRequest;
 }
 
 export class HttpRequest extends Request implements IHttpRequest {
@@ -31,7 +30,7 @@ export class HttpRequest extends Request implements IHttpRequest {
     this.headers = config.headers || <IMap<string>> {};
   }
 
-  public merge(request: IHttpRequest): IHttpRequest {
-    return new HttpRequest(Object.assign({}, this, request));
+  public merge(request: IHttpRequest): HttpRequest {
+    return new HttpRequest(_.merge({}, this, request));
   }
 }
