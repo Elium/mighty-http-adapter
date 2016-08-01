@@ -8,7 +8,6 @@
     "es6-shim": "registry:dt/es6-shim",
     "form-data": "registry:dt/form-data",
     "hapi": "registry:dt/hapi#13.0.0+20160602125023",
-    "lodash": "registry:dt/lodash",
     "mocha": "registry:dt/mocha",
     "node": "registry:dt/node",
     "request": "registry:dt/request"
