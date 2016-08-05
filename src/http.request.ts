@@ -1,5 +1,5 @@
 import {IRequest, IMap, Request} from '@elium/mighty-js';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 export interface IHttpRequest extends IRequest {
   data?: any;
