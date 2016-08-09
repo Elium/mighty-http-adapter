@@ -40,7 +40,7 @@
     "typings": "^1.0.4"
   },
   "dependencies": {
-    "@elium/mighty-js": "2.0.0",
+    "@elium/mighty-js": "^2.1.0",
     "lodash": "^4.14.1"
   },
   "bugs": {
