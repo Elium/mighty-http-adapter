@@ -5,7 +5,7 @@ import {IHttpResponse, HttpResponse} from '../../src/http.response';
 import {IMap} from '@elium/mighty-js';
 
 export class MockLayer<T> implements IDataLayer {
-  public rows: Array<T>;
+  rows: Array<T>;
 
   constructor(rows: Array<T>) {
     this.rows = rows;
