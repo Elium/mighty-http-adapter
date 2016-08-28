@@ -16,7 +16,7 @@ export class MockLayer<T> implements IDataLayer {
       const id = this._getMaxId(this.rows);
       const data = _.merge({}, request.data, {id: id + 1});
       this.rows.push(data);
-      resolve(new HttpResponse({data: data}));
+      resolve(new HttpResponse({data: data, status: 200}));
     });
   }
 
@@ -24,7 +24,7 @@ export class MockLayer<T> implements IDataLayer {
   findOne(request: IHttpRequest): Promise<IHttpResponse> {
     return new Promise((resolve) => {
       const row = _.find(this.rows, request.criteria);
-      resolve(new HttpResponse({data: _.cloneDeep(row)}));
+      resolve(new HttpResponse({data: _.cloneDeep(row), status: 200}));
     });
   }
 
@@ -32,7 +32,7 @@ export class MockLayer<T> implements IDataLayer {
   find(request: IHttpRequest): Promise<IHttpResponse> {
     return new Promise((resolve) => {
       const rows = _.filter(this.rows, request.criteria);
-      resolve(new HttpResponse({data: _.cloneDeep(rows)}));
+      resolve(new HttpResponse({data: _.cloneDeep(rows), status: 200}));
     });
   }
 
@@ -41,10 +41,10 @@ export class MockLayer<T> implements IDataLayer {
     return new Promise((resolve, reject) => {
       const index = _.findIndex(this.rows, request.criteria);
       if (index < 0) {
-        reject(new HttpResponse({error: new Error("There is no match for this row criteria")}));
+        reject(new HttpResponse({error: new Error("There is no match for this row criteria"), status: 400}));
       } else {
         this.rows.splice(index, 1, request.data);
-        resolve(new HttpResponse({data: _.cloneDeep(request.data)}));
+        resolve(new HttpResponse({data: _.cloneDeep(request.data), status: 200}));
       }
     });
   }
@@ -54,10 +54,10 @@ export class MockLayer<T> implements IDataLayer {
     return new Promise((resolve, reject) => {
       const index = _.findIndex(this.rows, request.criteria);
       if (index < 0) {
-        reject(new HttpResponse({error: new Error("There is no match for this row criteria")}));
+        reject(new HttpResponse({error: new Error("There is no match for this row criteria"), status: 400}));
       } else {
         const row = _.first(this.rows.splice(index, 1));
-        resolve(new HttpResponse({data: row}));
+        resolve(new HttpResponse({data: row, status: 200}));
       }
     });
   }
