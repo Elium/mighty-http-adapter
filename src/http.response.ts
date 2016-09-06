@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import {IResponse, Response} from '@elium/mighty-js';
 
 export interface IHttpResponse extends IResponse {
-  status: number
+  status?: number
 }
 
 export class HttpResponse extends Response implements IHttpResponse {
