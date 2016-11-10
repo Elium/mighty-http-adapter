@@ -10,9 +10,8 @@
     "module": "commonjs",
     "outDir": "lib"
   },
-  "exclude": [
-    "lib",
-    "node_modules",
-    "index.d.ts"
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
   ]
 }

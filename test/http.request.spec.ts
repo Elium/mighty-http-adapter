@@ -3,7 +3,7 @@ import {HttpRequest, IHttpRequest} from '../src/http.request';
 
 const expect = chai.expect;
 
-const requestLike = <IHttpRequest> {
+const requestLike = {
   url: "/hello",
   data: {a: 1},
   criteria: {b: 2},
@@ -13,21 +13,19 @@ const requestLike = <IHttpRequest> {
   params: {a: "1"}
 };
 
-const request = new HttpRequest({});
-
 describe("HttpRequest", () => {
   it(`should merge a HttpRequest like object`, () => {
-    const newRequest = request.merge(requestLike);
+    const request = new HttpRequest(requestLike);
     ["url", "data", "criteria", "method", "isArray", "headers", "params"].forEach((prop) => {
-      expect(newRequest[prop]).to.deep.equal(requestLike[prop]);
+      expect(request[prop]).to.deep.equal(requestLike[prop]);
     });
   });
 
   it(`should only merge defined property`, () => {
-    const newRequest = request.merge({url: "/hello", params: null});
-    expect(newRequest.url).to.equal("/hello");
-    expect(newRequest.method).to.deep.equal(request.method);
-    expect(newRequest.data).to.equal(request.data);
-    expect(newRequest.params).to.deep.equal(request.params);
+    const request = new HttpRequest({url: "/hello", params: null});
+    expect(request.url).to.equal("/hello");
+    expect(request.method).to.deep.equal(request.method);
+    expect(request.data).to.equal(request.data);
+    expect(request.params).to.deep.equal(request.params);
   });
 });
