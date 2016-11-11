@@ -22,8 +22,8 @@ export class HttpRequest extends Request implements IHttpRequest {
     super(config);
     config = config || {};
 
-    this.url = _.get(config, 'url', null);
-    this.data = _.get(config, 'data', null);
+    this.url = _.get(config, 'url', '');
+    this.data = _.get(config, 'data', {});
     this.method = _.get(config, 'method', "UNKNOWN");
     this.isArray = config.isArray === true;
     this.params = _.get(config, 'params', <IMap<string>> {});
