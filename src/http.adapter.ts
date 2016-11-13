@@ -39,6 +39,6 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
   }
 
   protected _getBaseRequestData<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): any {
-    return new HttpRequest(_.merge({url: `${this.baseUrl}/${resource.identity}`}, request));
+    return _.merge({}, request, {url: request.url || `${this.baseUrl}/${resource.identity}`});
   }
 }

@@ -18,6 +18,6 @@ export class RestAdapter extends HttpAdapter {
   }
 
   protected _getRequestWithId<R extends IRecord>(resource: IResource<R>, request: IHttpRequest) {
-    return new HttpRequest(_.merge({url: `${this.baseUrl}/${resource.identity}/${request.criteria["id"] || request.data.id}`}, request));
+    return _.merge({}, request, {url: request.url || `${this.baseUrl}/${resource.identity}/${request.criteria["id"] || request.data.id}`});
   }
 }
