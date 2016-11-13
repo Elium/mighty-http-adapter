@@ -19,26 +19,26 @@ export class HttpAdapter extends Adapter implements IHttpAdapter {
   }
 
   create<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.dataLayer.create(this._getRequest(resource, request));
+    return this.dataLayer.create(this._getBaseRequestData(resource, request));
   }
 
   findOne<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.dataLayer.findOne(this._getRequest(resource, request));
+    return this.dataLayer.findOne(this._getBaseRequestData(resource, request));
   }
 
   find<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.dataLayer.find(this._getRequest(resource, _.merge(request, {isArray: true})));
+    return this.dataLayer.find(this._getBaseRequestData(resource, _.merge(request, {isArray: true})));
   }
 
   save<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.dataLayer.save(this._getRequest(resource, request));
+    return this.dataLayer.save(this._getBaseRequestData(resource, request));
   }
 
   destroy<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.dataLayer.destroy(this._getRequest(resource, request));
+    return this.dataLayer.destroy(this._getBaseRequestData(resource, request));
   }
 
-  protected _getRequest<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): HttpRequest {
+  protected _getBaseRequestData<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): any {
     return new HttpRequest(_.merge({url: `${this.baseUrl}/${resource.identity}`}, request));
   }
 }
