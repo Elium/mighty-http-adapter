@@ -1,24 +1,24 @@
 import {IRank} from './rank.data';
-import {IRecord, Record, IMap} from '@elium/mighty-js';
+import {IRecord, Record, IMap, Resource} from '@elium/mighty-js';
 
-export interface IHero {
+export interface IHero extends IRecord {
   id: number
   name: string
   colors: Array<string>
   powers: Array<string>
-  
+
   rankId: number
   rank?: IRank
 }
 
-export class HeroRecord extends Record implements IHero, IRecord {
+export class Hero extends Record implements IHero {
   id: number;
   name: string;
   colors: Array<string>;
   powers: Array<string>;
   rankId: number;
   rank: IRank;
-  
+
   toJSON(): Object {
     return {
       id: this.id,
@@ -28,13 +28,19 @@ export class HeroRecord extends Record implements IHero, IRecord {
       rankId: this.rankId
     }
   }
-  
+
   parseData(data: IMap<any>) {
     this.id = data["id"] || null;
     this.name = data["name"] || null;
     this.colors = data["colors"] || [];
     this.powers = data["powers"] || [];
     this.rankId = data["rankId"] || null;
+  }
+}
+
+export class HeroResource extends Resource<IHero> {
+  constructor() {
+    super('hero', Hero);
   }
 }
 
@@ -61,13 +67,13 @@ export class HeroData {
       colors: ["red", "yellow", "white"],
       rankId: 3
     }
-  ];
-  
-  deadpool: IHero = {
+  ].map(hero => new Hero(hero));
+
+  deadpool: IHero = new Hero({
     id: null,
     name: "Deadpool",
     powers: ["swag", "strength"],
     colors: ["red"],
     rankId: 2
-  };
+  });
 }
