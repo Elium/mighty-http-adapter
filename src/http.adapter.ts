@@ -25,36 +25,42 @@ export class HttpAdapter extends Adapter implements IHttpAdapter, IHookable {
   applyHook: <I, O>(name: string, input: I) => Promise<I | O>;
 
   create<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.applyHook('beforeCreate', this._getBaseRequestData(resource, request))
+    return this._getBaseRequestData(resource, request)
+      .then(baseRequest => this.applyHook('beforeCreate', baseRequest))
       .then(newRequest => this.dataLayer.create(newRequest))
       .then(response => this.applyHook('afterCreate', response));
   }
 
   findOne<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.applyHook('beforeFindOne', this._getBaseRequestData(resource, request))
+    return this._getBaseRequestData(resource, request)
+      .then(baseRequest => this.applyHook('beforeFindOne', baseRequest))
       .then(newRequest => this.dataLayer.findOne(newRequest))
       .then(response => this.applyHook('afterFindOne', response));
   }
 
   find<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.applyHook('beforeFind', this._getBaseRequestData(resource, _.merge(request, {isArray: true})))
+    return this._getBaseRequestData(resource, _.merge(request, {isArray: true}))
+      .then(baseRequest => this.applyHook('beforeFind', baseRequest))
       .then(newRequest => this.dataLayer.find(newRequest))
       .then(response => this.applyHook('afterFind', response));
   }
 
   save<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.applyHook('beforeSave', this._getBaseRequestData(resource, request))
+    return this._getBaseRequestData(resource, request)
+      .then(baseRequest => this.applyHook('beforeSave', baseRequest))
       .then(newRequest => this.dataLayer.save(newRequest))
       .then(response => this.applyHook('afterSave', response));
   }
 
   destroy<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IResponse> {
-    return this.applyHook('beforeDestroy', this._getBaseRequestData(resource, request))
+    return this._getBaseRequestData(resource, request)
+      .then(baseRequest => this.applyHook('beforeDestroy', baseRequest))
       .then(newRequest => this.dataLayer.destroy(newRequest))
       .then(response => this.applyHook('afterDestroy', response));
   }
 
-  protected _getBaseRequestData<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): any {
-    return _.merge({}, request, {url: request.url || `${this.baseUrl}/${resource.identity}`});
+  protected _getBaseRequestData<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IHttpRequest> {
+    return this.applyHook('beforeRequest', request)
+      .then(newRequest => _.merge({}, newRequest, {url: request.url || `${this.baseUrl}/${resource.identity}`}));
   }
 }
