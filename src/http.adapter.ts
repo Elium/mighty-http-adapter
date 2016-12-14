@@ -61,6 +61,8 @@ export class HttpAdapter extends Adapter implements IHttpAdapter, IHookable {
 
   protected _getBaseRequestData<R extends IRecord>(resource: IResource<R>, request: IHttpRequest): Promise<IHttpRequest> {
     return this.applyHook('beforeRequest', request)
-      .then(newRequest => _.merge({}, newRequest, {url: request.url || `${this.baseUrl}/${resource.identity}`}));
+      .then((newRequest: IHttpRequest) => {
+        return _.merge({}, newRequest, {url: newRequest.url || `${this.baseUrl}/${resource.identity}`})
+      });
   }
 }

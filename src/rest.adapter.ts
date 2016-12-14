@@ -28,9 +28,9 @@ export class RestAdapter extends HttpAdapter {
 
   protected _getRequestWithId<R extends IRecord>(resource: IResource<R>, request: IHttpRequest) {
     return this.applyHook('beforeRequest', request)
-      .then(newRequest => {
-        const id = _.get(newRequest, 'criteria.id', null) || _.get(newRequest, 'data.id', "");    
-        return _.merge({}, request, {url: request.url || `${this.baseUrl}/${resource.identity}/${id}`});
+      .then((newRequest: IHttpRequest) => {
+        const id = _.get(newRequest, 'criteria.id', null) || _.get(newRequest, 'data.id', "");
+        return _.merge({}, newRequest, {url: newRequest.url || `${this.baseUrl}/${resource.identity}/${id}`});
       });
   }
 }
